@@ -97,19 +97,21 @@
         }
 
         .option-btn.selected {
-            border-color: #003953;
-            background: #e3f2fd;
-            color: #003953;
-            font-weight: 800;
-            transform: scale(1.05);
+            border-width: 5px;
+            box-shadow: 0 0 0 4px white, 0 0 0 8px #003953;
+            transform: scale(1.1);
         }
 
         .option-btn.true {
-            background: #e8f5e9;
+            background: #063853;
+            color: white;
+            border-color: #063853;
         }
 
         .option-btn.false {
-            background: #ffebee;
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
         }
 
         .option-label {
@@ -367,12 +369,12 @@
                 <span class="question-number">a</span>
                 ¿Un servidor público puede ejercer libremente su derecho al voto o sufragio?
             </div>
-            <div class="options">
-                <div class="option-btn true" onclick="selectAnswer(1, 'true')">
+            <div class="options" id="q1-options">
+                <div class="option-btn true" onclick="selectAnswer(1, 'true', this)">
                     <span>✓</span>
                     <div class="option-label">Verdadero</div>
                 </div>
-                <div class="option-btn false" onclick="selectAnswer(1, 'false')">
+                <div class="option-btn false" onclick="selectAnswer(1, 'false', this)">
                     <span>✗</span>
                     <div class="option-label">Falso</div>
                 </div>
@@ -382,12 +384,12 @@
                 <span class="question-number">b</span>
                 ¿Se permite usar el cargo o recursos públicos para favorecer campañas?
             </div>
-            <div class="options">
-                <div class="option-btn true" onclick="selectAnswer(2, 'true')">
+            <div class="options" id="q2-options">
+                <div class="option-btn true" onclick="selectAnswer(2, 'true', this)">
                     <span>✓</span>
                     <div class="option-label">Verdadero</div>
                 </div>
-                <div class="option-btn false" onclick="selectAnswer(2, 'false')">
+                <div class="option-btn false" onclick="selectAnswer(2, 'false', this)">
                     <span>✗</span>
                     <div class="option-label">Falso</div>
                 </div>
@@ -397,12 +399,12 @@
                 <span class="question-number">c</span>
                 ¿Presionar o influir en subalternos para apoyar causas políticas es una conducta prohibida?
             </div>
-            <div class="options">
-                <div class="option-btn true" onclick="selectAnswer(3, 'true')">
+            <div class="options" id="q3-options">
+                <div class="option-btn true" onclick="selectAnswer(3, 'true', this)">
                     <span>✓</span>
                     <div class="option-label">Verdadero</div>
                 </div>
-                <div class="option-btn false" onclick="selectAnswer(3, 'false')">
+                <div class="option-btn false" onclick="selectAnswer(3, 'false', this)">
                     <span>✗</span>
                     <div class="option-label">Falso</div>
                 </div>
@@ -412,12 +414,12 @@
                 <span class="question-number">d</span>
                 ¿Difundir propaganda electoral o intervenir en debates políticos por cualquier medio está permitido desde el cargo?
             </div>
-            <div class="options">
-                <div class="option-btn true" onclick="selectAnswer(4, 'true')">
+            <div class="options" id="q4-options">
+                <div class="option-btn true" onclick="selectAnswer(4, 'true', this)">
                     <span>✓</span>
                     <div class="option-label">Verdadero</div>
                 </div>
-                <div class="option-btn false" onclick="selectAnswer(4, 'false')">
+                <div class="option-btn false" onclick="selectAnswer(4, 'false', this)">
                     <span>✗</span>
                     <div class="option-label">Falso</div>
                 </div>
@@ -427,12 +429,12 @@
                 <span class="question-number">e</span>
                 ¿Leer noticias sobre elecciones está permitido?
             </div>
-            <div class="options">
-                <div class="option-btn true" onclick="selectAnswer(5, 'true')">
+            <div class="options" id="q5-options">
+                <div class="option-btn true" onclick="selectAnswer(5, 'true', this)">
                     <span>✓</span>
                     <div class="option-label">Verdadero</div>
                 </div>
-                <div class="option-btn false" onclick="selectAnswer(5, 'false')">
+                <div class="option-btn false" onclick="selectAnswer(5, 'false', this)">
                     <span>✗</span>
                     <div class="option-label">Falso</div>
                 </div>
@@ -446,6 +448,7 @@
         <!-- Página de resultados -->
         <div class="page" id="results-page">
             <div class="result-container" id="result-box">
+                <div class="status-label" id="status-label"></div>
                 <div class="result-title" id="result-title">RESULTADOS</div>
                 <div class="result-message" id="result-message">Tus respuestas:</div>
                 
@@ -482,14 +485,18 @@
         ];
 
         // Seleccionar respuesta
-        function selectAnswer(questionIndex, answer) {
-            // Quitar selección de ambos botones de esta pregunta
-            const buttons = document.querySelectorAll(`.options:nth-child(${questionIndex * 2}) .option-btn`);
-            buttons.forEach(btn => btn.classList.remove('selected'));
+        function selectAnswer(questionIndex, answer, element) {
+            // Obtener el contenedor de opciones de esta pregunta
+            const optionsContainer = document.getElementById(`q${questionIndex}-options`);
             
-            // Encontrar el botón clicado y seleccionarlo
-            const clickedBtn = event.currentTarget;
-            clickedBtn.classList.add('selected');
+            // Quitar selección de ambos botones de esta pregunta
+            const buttons = optionsContainer.querySelectorAll('.option-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Seleccionar el botón clicado
+            element.classList.add('selected');
             
             // Guardar respuesta (índice 0-4)
             userAnswers[questionIndex - 1] = answer;
@@ -518,6 +525,7 @@
         // Mostrar resultados
         function showResults(correctCount) {
             const resultBox = document.getElementById('result-box');
+            const statusLabel = document.getElementById('status-label');
             const resultTitle = document.getElementById('result-title');
             const resultMessage = document.getElementById('result-message');
             const resultsDetail = document.getElementById('results-detail');
@@ -529,11 +537,13 @@
             // Configurar estilo y título
             if (allCorrect) {
                 resultBox.className = 'result-container correct';
-                resultTitle.textContent = '¡CORRECTO!';
+                statusLabel.innerHTML = '<strong style="font-size: 1.8em; display: block; margin-bottom: 10px;">✅ RESPUESTA CORRECTA</strong>';
+                resultTitle.textContent = '¡FELICITACIONES!';
                 resultMessage.innerHTML = 'Has respondido correctamente todas las preguntas.<br>¡Excelente comprensión de las normas de participación política!';
             } else {
                 resultBox.className = 'result-container incorrect';
-                resultTitle.textContent = '¡INCORRECTO!';
+                statusLabel.innerHTML = '<strong style="font-size: 1.8em; display: block; margin-bottom: 10px;">❌ RESPUESTA INCORRECTA</strong>';
+                resultTitle.textContent = '¡INTÉNTALO DE NUEVO!';
                 resultMessage.innerHTML = `Respondiste correctamente ${correctCount} de 5 preguntas.<br>Revisa nuevamente los conceptos.`;
             }
             
