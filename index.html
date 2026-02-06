@@ -274,12 +274,12 @@
             font-weight: bold;
         }
 
-        .answer-icon.true {
+        .answer-icon.correct {
             background: #4CAF50;
             color: white;
         }
 
-        .answer-icon.false {
+        .answer-icon.incorrect {
             background: #f44336;
             color: white;
         }
@@ -556,14 +556,16 @@
                 const correctAnswer = correctAnswers[i + 1];
                 const isCorrect = (userAnswer === correctAnswer);
                 const answerText = userAnswer === 'true' ? 'Verdadero' : 'Falso';
-                const answerIcon = userAnswer === 'true' ? '✓' : '✗';
-                const answerClass = userAnswer === 'true' ? 'true' : 'false';
+                
+                // Icono y clase basados en si está correcto o incorrecto, NO en Verdadero/Falso
+                const answerIcon = isCorrect ? '✓' : '✗';
+                const answerClass = isCorrect ? 'correct' : 'incorrect';
                 
                 const resultItem = document.createElement('div');
                 resultItem.className = 'result-item';
                 resultItem.innerHTML = `
                     <div class="result-question-text">${questionNum}. ${questions[i]}</div>
-                    <div class="result-answer ${isCorrect ? 'correct' : 'incorrect'}">
+                    <div class="result-answer ${answerClass}">
                         <span class="answer-icon ${answerClass}">${answerIcon}</span>
                         <span>${answerText}</span>
                     </div>
